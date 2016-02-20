@@ -1,8 +1,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Assingment 2 - Photostereo Imaging
 
+% Calab Sphere Array
+data = ['Photostereo_RealImages/sphere-lamp1.tif'; 'Photostereo_RealImages/sphere-lamp2.tif'; 'Photostereo_RealImages/sphere-lamp3.tif'];
+sphereArray = cellstr(data);
+
 %% Init calabration Sphere. 
-imgSphere = imread('Photostereo_RealImages/sphere-lamp1.tif');
+imgSphere = imread(sphereArray{3});
 
 %Convert to gray
 imgSphereGray = rgb2gray(imgSphere);
@@ -20,3 +24,6 @@ pline_y = radius * sin(theta) + cy;
 hold on; 
 plot(pline_x, pline_y)
 hold off;
+
+%% Collect fg value pairs and E1, E2, and E3. 
+
