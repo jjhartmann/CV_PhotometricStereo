@@ -63,7 +63,7 @@ for x = 1:w
            tuple = [];
            
            %Add to matrix
-           fge1 = [fge1; double(f) double(g) double(E)];
+           fge1 = [fge1; double(x) double(y) double(f) double(g) double(E)];
        end
    end
 end
@@ -88,11 +88,11 @@ for x = 1:w
            
            f = nxx/(1 - nzz);
            g = nyy/(1 - nzz);
-           E = imgCropSphere1(x, y);
+           E = imgCropSphere2(x, y);
            tuple = [];
            
            %Add to matrix
-           fge2 = [fge2; double(f) double(g) double(E)];
+           fge2 = [fge2; double(x) double(y) double(f) double(g) double(E)];
        end
    end
 end
@@ -121,10 +121,40 @@ for x = 1:w
            tuple = [];
            
            %Add to matrix
-           fge3 = [fge3; double(f) double(g) double(E)];
+           fge3 = [fge3; double(x) double(y) double(f) double(g) double(E)];
        end
    end
 end
+
+%% Build Lookup Table indexed by E1/E2 E2/E3
+[fgesize w]  = size(fge1);
+
+epsilon = 20;
+BinScale = 10;
+LookUpTable(255 * BinScale, 255 * BinScale).f = 0;
+LookUpTable(255 * BinScale, 255 * BinScale).g = 0;
+AvgFG = double(zeros(255 * BinScale, 255 * BinScale));
+
+for y = 1:fgesize
+    E1E2 = ceil((fge1(y,5) + 1)/(fge2(y,5) + 1) * BinScale);
+    E2E3 = ceil((fge2(y,5) + 1)/(fge3(y,5) + 1) * BinScale);
+    
+    f = fge1(y,3);
+    g = fge1(y,4);
+    
+    curr = LookUpTable(E1E2, E2E3);
+    if (isempty(curr.f))
+        % Populate Container
+        LookUpTable(E1E2, E2E3).f = f;
+        LookUpTable(E1E2, E2E3).g = g;
+        AvgFG(E1E2, E2E3) = double((f + g)/2);
+    else
+        % Check values and averge or new spot
+        N = 33;
+    end
+    
+end
+
 
 
 
