@@ -25,5 +25,16 @@ hold on;
 plot(pline_x, pline_y)
 hold off;
 
+% Crop the image based on circle. 
+dim = [(cx - radius - 10) (cy - radius - 10) (2*radius + 10) (2*radius + 10)];
+imgCropSphere = imcrop(imgSphereGray, dim);
+figure
+imshow(imgCropSphere)
+
+% Get new center
+[h, w] = size(imgCropSphere);
+ccx = w/2;
+ccy = h/2;
 %% Collect fg value pairs and E1, E2, and E3. 
+
 
