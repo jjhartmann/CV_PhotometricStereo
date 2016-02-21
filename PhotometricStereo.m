@@ -93,12 +93,13 @@ ysize = 30;
 LookUpTable = [];
 LookUpTable(xsize * BinScale, ysize * BinScale).f = 0;
 LookUpTable(xsize * BinScale, ysize * BinScale).g = 0;
-AvgFG = nan(xsize * BinScale, ysize * BinScale);
+AvgFG = double(zeros(xsize * BinScale, ysize * BinScale));
 
 
 E1E2Vec = [];
 E2E3Vec = [];
-VVec = [];
+fv = [];
+gv = [];
 for y = 1:fgesize
     E1E2 = ceil((fge(y,5) + 1)/(fge(y,6) + 1) * 10);
     E2E3 = ceil((fge(y,6) + 1)/(fge(y,7) + 1) * 10);
@@ -116,14 +117,18 @@ for y = 1:fgesize
         % build sample data
         E1E2Vec = [E1E2Vec; E1E2];
         E2E3Vec = [E2E3Vec; E2E3];
-        VVec = [VVec;  double((f + g)/2)];
+        fv = [fv;  double(f)];
+        gv = [gv;  double(f)];
     else
         % Check values and averge or new spot
-        N = 33;
+        LookUpTable(E1E2, E2E3).f = [LookUpTable(E1E2, E2E3).f, double(f)];
+        LookUpTable(E1E2, E2E3).g = [LookUpTable(E1E2, E2E3).g, double(g)];
     end
     
 end
 
 
+%% Create Grid and intrpolate sparse matrix. 
+[gridx, gridy] = mesh(1:(xsize * BinScale), 1:(ysize * BinScale));
 
 
