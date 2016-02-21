@@ -118,7 +118,7 @@ for y = 1:fgesize
         E1E2Vec = [E1E2Vec; E1E2];
         E2E3Vec = [E2E3Vec; E2E3];
         fv = [fv;  double(f)];
-        gv = [gv;  double(f)];
+        gv = [gv;  double(g)];
     else
         % Check values and averge or new spot
         LookUpTable(E1E2, E2E3).f = [LookUpTable(E1E2, E2E3).f, double(f)];
@@ -129,6 +129,9 @@ end
 
 
 %% Create Grid and intrpolate sparse matrix. 
-[gridx, gridy] = mesh(1:(xsize * BinScale), 1:(ysize * BinScale));
+[gridx, gridy] = meshgrid(1:(xsize * BinScale), 1:(ysize * BinScale));
+interpFV = griddata(E1E2Vec, E2E3Vec, fv, gridx, gridy, 'nearest');
+interpGV = griddata(E1E2Vec, E2E3Vec, gv, gridx, gridy, 'nearest');
+
 
 
