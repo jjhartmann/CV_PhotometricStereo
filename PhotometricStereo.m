@@ -87,8 +87,8 @@ fge = removerows(fge, indRow);
 [fgesize, w]  = size(fge);
 
 epsilon = 20;
-BinScale = 100;
-xsize = 30;
+BinScale = 10;
+xsize = 50;
 ysize = 30;
 LookUpTable = [];
 LookUpTable(xsize * BinScale, ysize * BinScale).f = 0;
@@ -101,8 +101,8 @@ E2E3Vec = [];
 fv = [];
 gv = [];
 for y = 1:fgesize
-    E1E2 = ceil((fge(y,5) + 1)/(fge(y,6) + 1) * 10);
-    E2E3 = ceil((fge(y,6) + 1)/(fge(y,7) + 1) * 10);
+    E1E2 = ceil((fge(y,5) + 1)/(fge(y,6) + 1) * BinScale);
+    E2E3 = ceil((fge(y,6) + 1)/(fge(y,7) + 1) * BinScale);
     
     f = fge(y,3);
     g = fge(y,4);
@@ -133,5 +133,17 @@ end
 interpFV = griddata(E1E2Vec, E2E3Vec, fv, gridx, gridy, 'nearest');
 interpGV = griddata(E1E2Vec, E2E3Vec, gv, gridx, gridy, 'nearest');
 
-
+%% Fill data into lookup table. 
+w = xsize * BinScale;
+h = ysize * BinScale;
+for x = 1:w
+   for y = 1:h
+      curr = LookUpTable(x, y);
+      if (isempty(curr.f))
+         % Fill in with interpolated data
+         LookUpTable(y, x).f = interpFV(y, x);
+         LookUpTable(y, x).g = interpGV(y, x);
+      end
+   end
+end
 
