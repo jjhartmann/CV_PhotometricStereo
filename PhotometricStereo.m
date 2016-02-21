@@ -129,7 +129,7 @@ end
 
 
 %% Create Grid and intrpolate sparse matrix. 
-[gridx, gridy] = meshgrid(1:(xsize * BinScale), 1:(ysize * BinScale));
+[gridx, gridy] = meshgrid(1:(ysize * BinScale), 1:(xsize * BinScale));
 interpFV = griddata(E1E2Vec, E2E3Vec, fv, gridx, gridy, 'nearest');
 interpGV = griddata(E1E2Vec, E2E3Vec, gv, gridx, gridy, 'nearest');
 
@@ -141,9 +141,11 @@ for x = 1:w
       curr = LookUpTable(x, y);
       if (isempty(curr.f))
          % Fill in with interpolated data
-         LookUpTable(y, x).f = interpFV(y, x);
-         LookUpTable(y, x).g = interpGV(y, x);
+         LookUpTable(x, y).f = interpFV(x, y);
+         LookUpTable(x, y).g = interpGV(x, y);
       end
    end
 end
+
+
 
