@@ -44,6 +44,10 @@ for i = 1:h
          y = ceil((((2 * g)/(1 + f^2 + g^2)) * radius) + ccy);
          z = ceil(((-1 + f^2 + g^2)/(1 + f^2 + g^2)) * radius);
          
+         p = double(z/x);
+         q = double(z/y);
+         
+         
          TDMap(i, j) = z;
          
       end
