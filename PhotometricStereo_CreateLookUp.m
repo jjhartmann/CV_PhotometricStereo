@@ -83,9 +83,11 @@ for x = 1:w
 end
 fge = removerows(fge, indRow);
 
-%% Build Lookup Table indexed by E1/E2 E2/E3
+%% Build Lookup Table indexed by E1/E2 E2/E3 
 [fgesize, w]  = size(fge);
 
+
+% TODO: Change look-up table to use log. Map the values between -5 to 5. 
 epsilon = 20;
 BinScale = 30;
 xsize = 50;
