@@ -44,6 +44,7 @@ ccy = h/2;
 fge = double(zeros(w * h, 7));
 indRow = [];
 index = 1;
+testmat = zeros(h, w);
 for x = 1:w
    for y = 1:h
       
@@ -54,6 +55,7 @@ for x = 1:w
        if (rtmp < radius)
           % Use sterographic projection to detect f and g
            zz = ceil(sqrt(radius^2 - (xx^2 + yy^2)));
+           testmat(y, x) = zz;
            
            nxx = xx/radius;
            nyy = yy/radius;
@@ -61,9 +63,9 @@ for x = 1:w
            
            f = nxx/(1 - nzz);
            g = nyy/(1 - nzz);
-           E1 = imgCropSphere1(x, y);
-           E2 = imgCropSphere2(x, y);
-           E3 = imgCropSphere3(x, y);
+           E1 = imgCropSphere1(y, x);
+           E2 = imgCropSphere2(y, x);
+           E3 = imgCropSphere3(y, x);
 
            %Add to matrix
            % fge = [fge; double(x) double(y) double(f) double(g) double(E1) double(E2) double(E3)];
@@ -91,9 +93,9 @@ BinScale = 30;
 xsize = 50;
 ysize = 30;
 LookUpTable = [];
-LookUpTable(xsize * BinScale, ysize * BinScale).f = 0;
-LookUpTable(xsize * BinScale, ysize * BinScale).g = 0;
-AvgFG = double(zeros(xsize * BinScale, ysize * BinScale));
+LookUpTable(ysize * BinScale, xsize * BinScale).f = 0;
+LookUpTable(ysize * BinScale, xsize * BinScale).g = 0;
+AvgFG = double(zeros(ysize * BinScale, xsize * BinScale));
 
 
 E1E2Vec = [];
@@ -107,12 +109,12 @@ for y = 1:fgesize
     f = fge(y,3);
     g = fge(y,4);
     
-    curr = LookUpTable(E1E2, E2E3);
+    curr = LookUpTable(E2E3, E1E2);
     if (isempty(curr.f))
         % Populate Container
-        LookUpTable(E1E2, E2E3).f = f;
-        LookUpTable(E1E2, E2E3).g = g;
-        AvgFG(E1E2, E2E3) = double((f + g)/2);
+        LookUpTable(E2E3, E1E2).f = f;
+        LookUpTable(E2E3, E1E2).g = g;
+        AvgFG(E2E3, E1E2) = double((f + g)/2);
         
         % build sample data
         E1E2Vec = [E1E2Vec; E1E2];
@@ -121,27 +123,27 @@ for y = 1:fgesize
         gv = [gv;  double(g)];
     else
         % Check values and averge or new spot
-        LookUpTable(E1E2, E2E3).f = [LookUpTable(E1E2, E2E3).f, double(f)];
-        LookUpTable(E1E2, E2E3).g = [LookUpTable(E1E2, E2E3).g, double(g)];
+        LookUpTable(E2E3, E1E2).f = [LookUpTable(E2E3, E1E2).f, double(f)];
+        LookUpTable(E2E3, E1E2).g = [LookUpTable(E2E3, E1E2).g, double(g)];
     end
     
 end
 
 
 %% Create Grid and intrpolate sparse matrix. 
-[w, h] = size(LookUpTable);
-[gridw, gridh] = meshgrid(1:h, 1:w);
-interpFV = griddata(E1E2Vec, E2E3Vec, fv, gridw, gridh, 'nearest');
-interpGV = griddata(E1E2Vec, E2E3Vec, gv, gridw, gridh, 'nearest');
+[h, w] = size(LookUpTable);
+[gridx, gridy] = meshgrid(1:w, 1:h);
+interpFV = griddata(E1E2Vec, E2E3Vec, fv, gridx, gridy, 'nearest');
+interpGV = griddata(E1E2Vec, E2E3Vec, gv, gridx, gridy, 'nearest');
 
 %% Fill data into lookup table. 
 for i = 1:w
    for j = 1:h
-      curr = LookUpTable(i, j);
+      curr = LookUpTable(j, i);
       if (isempty(curr.f))
          % Fill in with interpolated data
-         LookUpTable(i, j).f = interpFV(i, j);
-         LookUpTable(i, j).g = interpGV(i, j);
+         LookUpTable(j, i).f = interpFV(j, i);
+         LookUpTable(j, i).g = interpGV(j, i);
       end
    end
 end

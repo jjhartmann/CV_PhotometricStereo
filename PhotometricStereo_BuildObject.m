@@ -10,9 +10,9 @@ hexlightdata = {'Photostereo_RealImages/hex1-lamp1.tif'; 'Photostereo_RealImages
 ellipsoiddata = {'Photostereo_RealImages/ellipsoid-lamp1.tif'; 'Photostereo_RealImages/ellipsoid-lamp2.tif'; 'Photostereo_RealImages/ellipsoid-lamp3.tif'};
 spheredata = {'Photostereo_RealImages/sphere-lamp1.tif'; 'Photostereo_RealImages/sphere-lamp2.tif'; 'Photostereo_RealImages/sphere-lamp3.tif'};
 
-img1 = rgb2gray(imread(cylinderdata{1}));
-img2 = rgb2gray(imread(cylinderdata{2}));
-img3 = rgb2gray(imread(cylinderdata{3}));
+img1 = rgb2gray(imread(spheredata{1}));
+img2 = rgb2gray(imread(spheredata{2}));
+img3 = rgb2gray(imread(spheredata{3}));
 
 %% Build 3D mesh
 
@@ -37,8 +37,8 @@ for i = 1:h
          E2E3 = ceil(double(E2 + 1)/double(E3 + 1)) * BinScale;
          
          % Search lookup table
-         f = LookUpTable(E1E2, E2E3).f(1);
-         g = LookUpTable(E1E2, E2E3).g(1);
+         f = LookUpTable(E2E3, E1E2).f(1);
+         g = LookUpTable(E2E3, E1E2).g(1);
          
          x = ceil((((2 * f)/(1 + f^2 + g^2)) * radius) + ccx);
          y = ceil((((2 * g)/(1 + f^2 + g^2)) * radius) + ccy);
