@@ -7,18 +7,22 @@
 % Load image data
 cylinderdata = {'Photostereo_RealImages/cylinder-lamp1.tif'; 'Photostereo_RealImages/cylinder-lamp2.tif'; 'Photostereo_RealImages/cylinder-lamp3.tif'};
 hexlightdata = {'Photostereo_RealImages/hex1-lamp1.tif'; 'Photostereo_RealImages/hex1-lamp2.tif'; 'Photostereo_RealImages/hex1-lamp3.tif'};
+hexlight2data = {'Photostereo_RealImages/hex2-lamp1.tif'; 'Photostereo_RealImages/hex2-lamp2.tif'; 'Photostereo_RealImages/hex2-lamp3.tif'};
 ellipsoiddata = {'Photostereo_RealImages/ellipsoid-lamp1.tif'; 'Photostereo_RealImages/ellipsoid-lamp2.tif'; 'Photostereo_RealImages/ellipsoid-lamp3.tif'};
 spheredata = {'Photostereo_RealImages/sphere-lamp1.tif'; 'Photostereo_RealImages/sphere-lamp2.tif'; 'Photostereo_RealImages/sphere-lamp3.tif'};
+coneLightdata = {'Photostereo_RealImages/cone-lamp1.tif'; 'Photostereo_RealImages/cone-lamp2.tif'; 'Photostereo_RealImages/cone-lamp3.tif'};
+conedarkdata = {'Photostereo_RealImages/cone2-lamp1.tif'; 'Photostereo_RealImages/cone2-lamp2.tif'; 'Photostereo_RealImages/cone2-lamp3.tif'};
 
-img1 = rgb2gray(imread(ellipsoiddata{1}));
-img2 = rgb2gray(imread(ellipsoiddata{2}));
-img3 = rgb2gray(imread(ellipsoiddata{3}));
+
+img1 = rgb2gray(imread(hexlight2data{1}));
+img2 = rgb2gray(imread(hexlight2data{2}));
+img3 = rgb2gray(imread(hexlight2data{3}));
 
 %% Build 3D mesh
 
 % Iterate over all three images. 
 [h, w] = size(img1);
-th = 30;
+th = 35;
 BinScale = 100; % TODO: Create Global Static Vars to share. 
 
 TDMap = [];
