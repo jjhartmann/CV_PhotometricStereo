@@ -67,6 +67,14 @@ for x = 1:w
            E2 = imgCropSphere2(y, x);
            E3 = imgCropSphere3(y, x);
 
+           % Check for infinit
+           if (f == inf || isnan(f) || f == -inf)
+              continue; 
+           end
+           if (g == inf || isnan(g) || g == -inf)
+              continue; 
+           end
+           
            %Add to matrix
            % fge = [fge; double(x) double(y) double(f) double(g) double(E1) double(E2) double(E3)];
            fge((x - 1) * (h - 1) + y, 1) = double(x);
