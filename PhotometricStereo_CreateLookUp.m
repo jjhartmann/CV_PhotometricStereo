@@ -103,10 +103,9 @@ BinScale = 100;
 xsize = 10;
 ysize = 10;
 LookUpTable = [];
-LookUpTable(ysize * BinScale, xsize * BinScale).f = 0;
-LookUpTable(ysize * BinScale, xsize * BinScale).g = 0;
+LookUpTable(ysize * BinScale, xsize * BinScale).f = [0 0];
+LookUpTable(ysize * BinScale, xsize * BinScale).g = [0 0];
 AvgFG = double(zeros(ysize * BinScale, xsize * BinScale));
-
 
 E1E2Vec = [];
 E2E3Vec = [];
@@ -133,8 +132,42 @@ for y = 1:fgesize
         gv = [gv;  double(g)];
     else
         % Check values and averge or new spot
-        LookUpTable(E2E3, E1E2).f = [LookUpTable(E2E3, E1E2).f, double(f)];
-        LookUpTable(E2E3, E1E2).g = [LookUpTable(E2E3, E1E2).g, double(g)];
+        epsilon = 0.5;       
+        tmpf = LookUpTable(E2E3, E1E2).f(1);
+        tmpg = LookUpTable(E2E3, E1E2).g(1);
+        deltaf = double(abs(tmpf - f));
+        deltag = double(abs(tmpg - g));
+        
+        % check value for f
+        if ((f >= 0 && tmpf >= 0 && deltaf < epsilon) || (f <= 0 && tmpf < 0 && deltaf < epsilon))
+           % Values are similar
+            LookUpTable(E2E3, E1E2).f(1) = (tmpf + double(f))/2;
+        else
+           % store new value
+           [t s] = size(LookUpTable(E2E3, E1E2).f);
+           if (s < 2)
+               LookUpTable(E2E3, E1E2).f(2) = 0;
+           end
+           
+           tmpf = LookUpTable(E2E3, E1E2).f(2);
+           LookUpTable(E2E3, E1E2).f(2) = (tmpf + double(f))/2;
+        end
+           
+         % check value for g
+        if ((g >= 0 && tmpg >= 0 && deltag < 1.0) || (g <= 0 && tmpg < 0 && deltag < epsilon))
+           % Values are similar
+            LookUpTable(E2E3, E1E2).g(1) = (tmpg + double(g))/2;
+        else
+           % store new value
+          [t s] = size(LookUpTable(E2E3, E1E2).g);
+          if (s < 2)
+               LookUpTable(E2E3, E1E2).g(2) = 0;
+          end
+          
+          tmpg = LookUpTable(E2E3, E1E2).g(2);
+          LookUpTable(E2E3, E1E2).g(2) = (tmpg + double(g))/2;
+        end
+        
     end
     
 end
