@@ -91,9 +91,9 @@ fge = removerows(fge, indRow);
 
 % TODO: Change look-up table to use log. Map the values between -5 to 5. 
 epsilon = 20;
-BinScale = 30;
-xsize = 50;
-ysize = 30;
+BinScale = 100;
+xsize = 10;
+ysize = 10;
 LookUpTable = [];
 LookUpTable(ysize * BinScale, xsize * BinScale).f = 0;
 LookUpTable(ysize * BinScale, xsize * BinScale).g = 0;
@@ -105,8 +105,8 @@ E2E3Vec = [];
 fv = [];
 gv = [];
 for y = 1:fgesize
-    E1E2 = ceil((fge(y,5) + 1)/(fge(y,6) + 1) * BinScale);
-    E2E3 = ceil((fge(y,6) + 1)/(fge(y,7) + 1) * BinScale);
+    E1E2 = ceil((log((fge(y,5) + 1)/(fge(y,6) + 1)) + 5) * BinScale);
+    E2E3 = ceil((log((fge(y,6) + 1)/(fge(y,7) + 1)) + 5) * BinScale);
     
     f = fge(y,3);
     g = fge(y,4);
