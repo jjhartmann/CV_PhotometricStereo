@@ -14,14 +14,15 @@ coneLightdata = {'Photostereo_RealImages/cone-lamp1.tif'; 'Photostereo_RealImage
 conedarkdata = {'Photostereo_RealImages/cone2-lamp1.tif'; 'Photostereo_RealImages/cone2-lamp2.tif'; 'Photostereo_RealImages/cone2-lamp3.tif'};
 
 
-img1 = rgb2gray(imread(cylinderdata{1}));
-img2 = rgb2gray(imread(cylinderdata{2}));
-img3 = rgb2gray(imread(cylinderdata{3}));
+img1 = rgb2gray(imread(hexlightdata{1}));
+img2 = rgb2gray(imread(hexlightdata{2}));
+img3 = rgb2gray(imread(hexlightdata{3}));
 
 %% Build 3D mesh
 
 % Iterate over all three images. 
 [h, w] = size(img1);
+[lw, lw] = size(LookUpTable);
 th = 35;
 BinScale = 100; % TODO: Create Global Static Vars to share. 
 
@@ -43,9 +44,25 @@ for i = 1:h
          E1E2 = ceil((log(double(E1 + 1)/double(E2 + 1)) + 5) * BinScale);
          E2E3 = ceil((log(double(E2 + 1)/double(E3 + 1)) + 5) * BinScale);
          
-         % Search lookup table
-         f = LookUpTable(E2E3, E1E2).f(1);
-         g = LookUpTable(E2E3, E1E2).g(1);
+         % Get previous values
+         previ = E1E2;
+         prevj = E2E3;
+         if (previ ~= 1)
+             previ = i - 1;
+         elseif (prevj ~= 1)
+             prevj = j - 1;
+         end
+         
+         prevP = P(previ, prevj);
+         prevQ = Q(previ, prevj);
+         
+         %% Search lookup table
+         f = LookUpTable(E2E3, E1E2).f;
+         g = LookUpTable(E2E3, E1E2).g;
+         
+         % Find similar value
+         [ft, fs] = size(f);
+         % TODO: FIND APPROPRIATE VALUE
          
          x = ceil((((2 * f)/(1 + f^2 + g^2)) * radius));
          y = ceil((((2 * g)/(1 + f^2 + g^2)) * radius));
@@ -87,7 +104,7 @@ for i = 1:h
            tmpQ = Q(i, j);
            Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
            
-           tmpZ = Z(i, j);
+           tmpZ = Z2(i, j);
            Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
        end
   else
@@ -108,7 +125,7 @@ for i = 1:h
            tmpQ = Q(i, j);
            Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
            
-           tmpZ = Z(i, j);
+           tmpZ = Z2(i, j);
            Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
        end
   end
@@ -136,7 +153,7 @@ for j = 1:w
            tmpQ = Q(i, j);
            Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
            
-           tmpZ = Z(i, j);
+           tmpZ = Z2(i, j);
            Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
        end
   else
@@ -157,7 +174,7 @@ for j = 1:w
            tmpQ = Q(i, j);
            Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
            
-           tmpZ = Z(i, j);
+           tmpZ = Z2(i, j);
            Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
        end
   end
