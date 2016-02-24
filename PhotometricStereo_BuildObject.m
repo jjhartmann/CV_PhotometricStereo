@@ -30,6 +30,10 @@ TDMap = [];
 P = [];
 Q = [];
 Z = [];
+prevE1E2 = 0;
+prevE2E3 = 0;
+prevf = 0;
+prevg = 0;
 for i = 1:h
    for j = 1:w
        
@@ -45,16 +49,10 @@ for i = 1:h
          E2E3 = ceil((log(double(E2 + 1)/double(E3 + 1)) + 5) * BinScale);
          
          % Get previous values
-         previ = E1E2;
-         prevj = E2E3;
-         if (previ ~= 1)
-             previ = i - 1;
-         elseif (prevj ~= 1)
-             prevj = j - 1;
-         end
-         
-         prevP = P(previ, prevj);
-         prevQ = Q(previ, prevj);
+%          if (prevf > 0 && prevg > 0)
+%             prevf = LookUpTable(E2E3, E1E2).f;
+%             prevg = LookUpTable(prevE2E3, prevE1E2).g;
+%          end
          
          %% Search lookup table
          f = LookUpTable(E2E3, E1E2).f;
@@ -62,8 +60,28 @@ for i = 1:h
          
          % Find similar value
          [ft, fs] = size(f);
-         % TODO: FIND APPROPRIATE VALUE
+         if (fs > 1)
+            deltaf1 = abs(f(1) - prevf);
+            deltaf2 = abs(f(2) - prevf);
+            if (deltaf1 < deltaf2)
+                f = f(1);
+            else
+                f = f(2);
+            end
+         end
          
+         [gt, gs] = size(g);
+         if (gs > 1)
+            deltag1 = abs(g(1) - prevg);
+            deltag2 = abs(g(2) - prevg);
+            if (deltag1 < deltag2)
+                g = g(1);
+            else
+                g = g(2);
+            end
+         end
+         
+         %% Build p and q
          x = ceil((((2 * f)/(1 + f^2 + g^2)) * radius));
          y = ceil((((2 * g)/(1 + f^2 + g^2)) * radius));
          z = ceil(((-1 + f^2 + g^2)/(1 + f^2 + g^2)) * radius);
@@ -73,6 +91,12 @@ for i = 1:h
          Z(i, j) = 0;
          
          TDMap(i, j) = z;
+         
+         % set Previous
+         prevE1E2 = E1E2;
+         prevE2E3 = E2E3;
+         prevf = f;
+         prevg = g;
          
       end
    end
