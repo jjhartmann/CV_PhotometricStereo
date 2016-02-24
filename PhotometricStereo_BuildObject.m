@@ -14,9 +14,9 @@ coneLightdata = {'Photostereo_RealImages/cone-lamp1.tif'; 'Photostereo_RealImage
 conedarkdata = {'Photostereo_RealImages/cone2-lamp1.tif'; 'Photostereo_RealImages/cone2-lamp2.tif'; 'Photostereo_RealImages/cone2-lamp3.tif'};
 
 
-img1 = rgb2gray(imread(hexlight2data{1}));
-img2 = rgb2gray(imread(hexlight2data{2}));
-img3 = rgb2gray(imread(hexlight2data{3}));
+img1 = rgb2gray(imread(cylinderdata{1}));
+img2 = rgb2gray(imread(cylinderdata{2}));
+img3 = rgb2gray(imread(cylinderdata{3}));
 
 %% Build 3D mesh
 
@@ -53,10 +53,112 @@ for i = 1:h
          
          P(i, j) = double(x/z);
          Q(i, j) = double(y/z);
-         Z(i, j) = z;
+         Z(i, j) = 0;
          
          TDMap(i, j) = z;
          
       end
    end
+end
+
+
+% Integrate along multiple paths. 
+[h, w] = size(P);
+P2 = zeros(size(P));
+Q2 = zeros(size(Q));
+Z2 = zeros(size(P));
+for i = 1:h
+    
+  if (mod(i, 2) == 1)
+       for j = 1:w
+           prevj = j;
+           previ = i;
+           if (j ~= 1)
+               prevj = j - 1;
+           end
+           
+           if (j == w && i ~= 1)
+               previ = i - 1;
+           end
+           
+           tmp = P(i, j);
+           P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
+           
+           tmpQ = Q(i, j);
+           Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
+           
+           tmpZ = Z(i, j);
+           Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
+       end
+  else
+       for j = w:1
+           prevj = j;
+           previ = i;
+           if (j ~= w)
+               prevj = j + 1;
+           end
+           
+           if (j == 1 && i ~= 1)
+               previ = i - 1;
+           end
+           
+           tmp = P(i, j);
+           P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
+           
+           tmpQ = Q(i, j);
+           Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
+           
+           tmpZ = Z(i, j);
+           Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
+       end
+  end
+end
+
+
+% Other way
+for j = 1:w
+    
+  if (mod(j, 2) == 1)
+       for i = 1:h
+           prevj = j;
+           previ = i;
+           if (j ~= 1)
+               prevj = j - 1;
+           end
+           
+           if (j == w && i ~= 1)
+               previ = i - 1;
+           end
+           
+           tmp = P(i, j);
+           P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
+           
+           tmpQ = Q(i, j);
+           Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
+           
+           tmpZ = Z(i, j);
+           Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
+       end
+  else
+       for i = h:1
+           prevj = j;
+           previ = i;
+           if (j ~= w)
+               prevj = j + 1;
+           end
+           
+           if (j == 1 && i ~= 1)
+               previ = i - 1;
+           end
+           
+           tmp = P(i, j);
+           P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
+           
+           tmpQ = Q(i, j);
+           Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
+           
+           tmpZ = Z(i, j);
+           Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
+       end
+  end
 end
