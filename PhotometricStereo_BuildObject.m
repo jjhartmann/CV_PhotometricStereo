@@ -23,7 +23,7 @@ img3 = rgb2gray(imread(hexlightdata{3}));
 % Iterate over all three images. 
 [h, w] = size(img1);
 [lw, lw] = size(LookUpTable);
-th = 35;
+th = 30;
 BinScale = 100; % TODO: Create Global Static Vars to share. 
 
 TDMap = [];
@@ -86,9 +86,13 @@ for i = 1:h
          y = ceil((((2 * g)/(1 + f^2 + g^2)) * radius));
          z = ceil(((-1 + f^2 + g^2)/(1 + f^2 + g^2)) * radius);
          
+         if (z < 1)
+             z = abs(z);
+         end
+         
          P(i, j) = double(x/z);
          Q(i, j) = double(y/z);
-         Z(i, j) = 0;
+         Z(i, j) = z;
          
          TDMap(i, j) = z;
          
@@ -103,11 +107,81 @@ for i = 1:h
 end
 
 
-% Integrate along multiple paths. 
+%% EXPERIMENTS: Integrate along multiple paths. 
 [h, w] = size(P);
 P2 = zeros(size(P));
 Q2 = zeros(size(Q));
 Z2 = zeros(size(P));
+previ = 0;
+prevj = 0;
+for i = 1:h
+    for j = 1:w
+        tmp = P(i, j);
+        tmpPrevP = 0;
+        tmpPrevZ = 0;
+        if(previ >= 1 && prevj > 1)
+            tmpPrevP = P2(previ, prevj);
+            tmpPrevZ = Z2(previ, prevj);
+            tmp = 0;
+        end
+        
+        if (tmpPrevP == -inf || isnan(tmpPrevP) || tmpPrevP == inf)
+           tmpPrevP = 0; 
+        end
+        
+        if (tmp == -inf || isnan(tmp) || tmp == inf)
+           tmp = 0; 
+        end
+        
+        P2(i, j) =  tmpPrevP + tmp;
+        Z2(i, j) =  double(tmpPrevZ + tmpPrevP)/2 + tmp;
+        
+        prevj= j;
+        previ = i;
+    end
+end
+
+previ = 0;
+prevj = 0;
+P3 = zeros(size(P));
+for i = 1:h
+    for j = w:-1:1
+        tmp = P(i, j);
+        tmpPrevP = 0;
+        tmpPrevZ = 0;
+        if(previ >= 1 && prevj > 1)
+            tmpPrevP = P3(previ, prevj);
+            tmpPrevZ = Z2(previ, prevj);
+        end
+        P3(i, j) =  tmpPrevP + tmp;
+        Z2(i, j) =  double(tmpPrevZ + tmpPrevP)/2 + double(tmp + Z2(i, j))/2;
+        
+        prevj= j;
+        previ = i;
+    end
+end
+
+
+%%%%%%%%%% Q
+previ = 0;
+prevj = 0;
+for j = 1:w
+    for i = 1:h
+        tmp = Q(i, j);
+        tmpPrevQ = 0;
+        if(previ > 1 && prevj > 1)
+            tmpPrevQ = Q2(previ, prevj);
+        end
+        Q2(i, j) =  tmpPrevQ + tmp;
+        
+        prevj= j;
+        previ = i;
+    end
+end
+
+
+%% Interpolate
+
 for i = 1:h
     
   if (mod(i, 2) == 1)
