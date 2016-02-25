@@ -23,7 +23,7 @@ img3 = rgb2gray(imread(hexlightdata{3}));
 % Iterate over all three images. 
 [h, w] = size(img1);
 [lw, lw] = size(LookUpTable);
-th = 30;
+th = 35;
 BinScale = 100; % TODO: Create Global Static Vars to share. 
 
 TDMap = [];
@@ -34,10 +34,11 @@ prevE1E2 = 0;
 prevE2E3 = 0;
 prevf = 0;
 prevg = 0;
+prevz = 0;
 for i = 1:h
    for j = 1:w
        
-      val = max([img1(i, j), img2(i, j), img2(i, j)]);
+      val = max([img1(i, j), img2(i, j), img3(i, j)]);
       if (val > th)
          % Process pixel. 
          E1 = img1(i, j);
@@ -63,9 +64,10 @@ for i = 1:h
          if (fs > 1)
             deltaf1 = abs(f(1) - prevf);
             deltaf2 = abs(f(2) - prevf);
-            if (deltaf1 < deltaf2)
+            minf = min(deltaf1, deltaf2);
+            if (minf == deltaf1)
                 f = f(1);
-            else
+            else 
                 f = f(2);
             end
          end
@@ -74,7 +76,8 @@ for i = 1:h
          if (gs > 1)
             deltag1 = abs(g(1) - prevg);
             deltag2 = abs(g(2) - prevg);
-            if (deltag1 < deltag2)
+            ming = min(deltag1, deltag2);
+            if (ming == deltag1)
                 g = g(1);
             else
                 g = g(2);
@@ -86,10 +89,14 @@ for i = 1:h
          y = ceil((((2 * g)/(1 + f^2 + g^2)) * radius));
          z = ceil(((-1 + f^2 + g^2)/(1 + f^2 + g^2)) * radius);
          
-         if (z < 1)
-             z = abs(z);
+         if (abs(double(x/z)) > 80 || abs(double(y/z)) > 80)
+            z = prevz;
          end
          
+%          if (z < 1)
+%              z = abs(z);
+%          end
+
          P(i, j) = double(x/z);
          Q(i, j) = double(y/z);
          Z(i, j) = z;
@@ -101,6 +108,7 @@ for i = 1:h
          prevE2E3 = E2E3;
          prevf = f;
          prevg = g;
+         prevz = z;
          
       end
    end
@@ -119,8 +127,7 @@ for i = 1:h
         tmp = P(i, j);
         tmpPrevP = 0;
         tmpPrevZ = 0;
-        
-        if(previ >= 1 && prevj > 1)
+        if(previ < h && prevj < w && previ > 1 && prevj > 1)
             tmpPrevP = P2(previ, prevj);
             tmpPrevZ = Z2(previ, prevj);
         else
@@ -147,7 +154,7 @@ for i = 1:h
         tmp = P(i, j);
         tmpPrevP = 0;
         tmpPrevZ = 0;
-        if(previ >= 1 && prevj > 1)
+        if(previ < h && prevj < w && previ > 1 && prevj > 1)
             tmpPrevP = P3(previ, prevj);
             tmpPrevZ = Z2(previ, prevj);
         else

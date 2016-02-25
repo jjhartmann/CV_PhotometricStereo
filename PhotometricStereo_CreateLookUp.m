@@ -135,11 +135,11 @@ for y = 1:fgesize
         epsilon = 0.5;       
         tmpf = LookUpTable(E2E3, E1E2).f(1);
         tmpg = LookUpTable(E2E3, E1E2).g(1);
-        deltaf = double(abs(tmpf - f));
-        deltag = double(abs(tmpg - g));
+        deltaf = double(abs(tmpf) - abs(f));
+        deltag = double(abs(tmpg) - abs(g));
         
         % check value for f
-        if ((f >= 0 && tmpf >= 0 && deltaf < epsilon) || (f <= 0 && tmpf < 0 && deltaf < epsilon))
+        if ((f >= 0 && tmpf >= 0 && deltaf < epsilon) || (f <= 0 && tmpf < 0 && deltaf < epsilon) || (abs(f) <= (epsilon/2) && abs(tmpf) <= (epsilon/2)))
            % Values are similar
             LookUpTable(E2E3, E1E2).f(1) = (tmpf + double(f))/2;
         else
@@ -154,7 +154,7 @@ for y = 1:fgesize
         end
            
          % check value for g
-        if ((g >= 0 && tmpg >= 0 && deltag < 1.0) || (g <= 0 && tmpg < 0 && deltag < epsilon))
+        if ((g >= 0 && tmpg >= 0 && deltag < epsilon) || (g <= 0 && tmpg < 0 && deltag < epsilon) || (abs(g) <= (epsilon/2) && abs(tmpg) <= (epsilon/2)))
            % Values are similar
             LookUpTable(E2E3, E1E2).g(1) = (tmpg + double(g))/2;
         else
@@ -176,8 +176,12 @@ end
 %% Create Grid and intrpolate sparse matrix. 
 [h, w] = size(LookUpTable);
 [gridx, gridy] = meshgrid(1:w, 1:h);
-interpFV = griddata(E1E2Vec, E2E3Vec, fv, gridx, gridy, 'nearest');
-interpGV = griddata(E1E2Vec, E2E3Vec, gv, gridx, gridy, 'nearest');
+interpFV = griddata(E1E2Vec, E2E3Vec, fv, gridx, gridy, 'cubic');
+interpGV = griddata(E1E2Vec, E2E3Vec, gv, gridx, gridy, 'cubic');
+
+% Smooth interpolation with gaussian filters
+interpFV = imgaussfilt3(interpFV, 6);
+interpGV = imgaussfilt3(interpGV, 6);
 
 %% Fill data into lookup table. 
 for i = 1:w
