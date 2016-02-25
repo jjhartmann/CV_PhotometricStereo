@@ -89,9 +89,9 @@ for i = 1:h
          y = ceil((((2 * g)/(1 + f^2 + g^2)) * radius));
          z = ceil(((-1 + f^2 + g^2)/(1 + f^2 + g^2)) * radius);
          
-         if (abs(double(x/z)) > 80 || abs(double(y/z)) > 80)
-            z = prevz;
-         end
+%          if (abs(double(x/z)) > 5 || abs(double(y/z)) > 5)
+%             z = (prevz * 1.3);
+%          end
          
 %          if (z < 1)
 %              z = abs(z);
@@ -174,23 +174,74 @@ for i = 1:h
 end
 
 
-%%%%%%%%%% Q
+%% Q INterpolate over Q Values
 previ = 0;
 prevj = 0;
 for j = 1:w
     for i = 1:h
         tmp = Q(i, j);
         tmpPrevQ = 0;
-        if(previ > 1 && prevj > 1)
+        tmpPrevZ = 0;
+        if(previ < h && prevj < w && previ > 1 && prevj > 1)
             tmpPrevQ = Q2(previ, prevj);
+            tmpPrevZ = Z2(previ, prevj);
+        else
+            tmp = 0;
         end
-        Q2(i, j) =  tmpPrevQ + tmp;
+        
+        % Check for inf or nans
+        if (tmp == -inf || isnan(tmp) || tmp == inf)
+           tmp = 0; 
+        end
+        Q2(i, j) =  tmpPrevQ - tmp;
+        Z2(i, j) =  double(tmpPrevZ + tmpPrevQ)/2 + double(tmp + Z2(i, j))/2;
         
         prevj= j;
         previ = i;
     end
 end
 
+previ = 0;
+prevj = 0;
+Q3 = zeros(size(P));
+for j = 1:w
+    for i = h:-1:1
+        tmp = Q(i, j);
+        tmpPrevQ = 0;
+        tmpPrevZ = 0;
+        if(previ < h && prevj < w && previ > 1 && prevj > 1)
+            tmpPrevQ = Q3(previ, prevj);
+            tmpPrevZ = Z2(previ, prevj);
+        else
+            tmp = 0;
+        end
+        
+        % Check for inf or nans
+        if (tmp == -inf || isnan(tmp) || tmp == inf)
+           tmp = 0; 
+        end
+        Q3(i, j) =  tmpPrevQ + tmp;
+        Z2(i, j) =  double(tmpPrevZ + tmpPrevQ)/2 + double(tmp + Z2(i, j))/2;
+        
+        prevj = j;
+        previ = i;
+    end
+end
+
+% for j = 1:w
+%     for i = 1:h
+%         tmp = Q(i, j);
+%         tmpPrevQ = 0;
+%         if(previ > 1 && prevj > 1)
+%             tmpPrevQ = Q2(previ, prevj);
+%         end
+%         Q2(i, j) =  tmpPrevQ + tmp;
+%         
+%         prevj= j;
+%         previ = i;
+%     end
+% end
+% 
 
 %% Interpolate
 
