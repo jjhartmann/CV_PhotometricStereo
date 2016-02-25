@@ -114,6 +114,11 @@ for i = 1:h
    end
 end
 
+%% Build Quiver Plot
+PSubSample = P(1:5:end, 1:5:end);
+QSubSample = Q(1:5:end, 1:5:end);
+figure(2)
+quiver(PSubSample, QSubSample);
 
 %% EXPERIMENTS: Integrate along multiple paths. 
 [h, w] = size(P);
