@@ -14,9 +14,9 @@ coneLightdata = {'Photostereo_RealImages/cone-lamp1.tif'; 'Photostereo_RealImage
 conedarkdata = {'Photostereo_RealImages/cone2-lamp1.tif'; 'Photostereo_RealImages/cone2-lamp2.tif'; 'Photostereo_RealImages/cone2-lamp3.tif'};
 
 
-img1 = rgb2gray(imread(hexlightdata{1}));
-img2 = rgb2gray(imread(hexlightdata{2}));
-img3 = rgb2gray(imread(hexlightdata{3}));
+img1 = rgb2gray(imread(spheredata{1}));
+img2 = rgb2gray(imread(spheredata{2}));
+img3 = rgb2gray(imread(spheredata{3}));
 
 %% Build 3D mesh
 
@@ -35,6 +35,8 @@ prevE2E3 = 0;
 prevf = 0;
 prevg = 0;
 prevz = 0;
+prevp = 0;
+prevq = 0;
 for i = 1:h
    for j = 1:w
        
@@ -88,17 +90,31 @@ for i = 1:h
          x = ceil((((2 * f)/(1 + f^2 + g^2)) * radius));
          y = ceil((((2 * g)/(1 + f^2 + g^2)) * radius));
          z = ceil(((-1 + f^2 + g^2)/(1 + f^2 + g^2)) * radius);
+         p = double(x/z);
+         q = double(y/z);
          
-%          if (abs(double(x/z)) > 5 || abs(double(y/z)) > 5)
-%             z = (prevz * 1.3);
+         deltap = abs(prevp - p);
+         deltaq = abs(prevq - q);
+%          if (deltap > 2)
+%              p = prevp;
+%          end
+%          if (deltaq > 2)
+%              q = prevq;
+%          end
+%          hops = 1000;
+%          while (deltap > 2 && deltaq > 2 && hops > 1)
+%              z = z * 1.2;
+%              deltap = abs(prevp - p);
+%              deltaq = abs(prevq - q);
+%              hops = hops - 1;
 %          end
          
 %          if (z < 1)
 %              z = abs(z);
 %          end
 
-         P(i, j) = double(x/z);
-         Q(i, j) = double(y/z);
+         P(i, j) = p;
+         Q(i, j) = q;
          Z(i, j) = z;
          
          TDMap(i, j) = z;
@@ -109,6 +125,8 @@ for i = 1:h
          prevf = f;
          prevg = g;
          prevz = z;
+         prevp = p;
+         prevq = q;
          
       end
    end
@@ -177,6 +195,16 @@ for i = 1:h
         previ = i;
     end
 end
+
+%% Build Quiver form Results
+Z2G = imgaussfilt3(Z2, 5);
+Z2GSUB = Z2G(1:5:end, 1:5:end);
+PSUB = P(1:5:end, 1:5:end);
+QSUB = Q(1:5:end, 1:5:end);
+WSUB = ones(size(PSUB));
+
+figure(3);
+quiver3(Z2GSUB, PSUB, QSUB, WSUB)
 
 
 %% Q INterpolate over Q Values
