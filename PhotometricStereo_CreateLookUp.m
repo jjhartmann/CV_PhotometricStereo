@@ -131,15 +131,15 @@ for y = 1:fgesize
         fv = [fv;  double(f)];
         gv = [gv;  double(g)];
     else
-        % Check values and averge or new spot
-        epsilon = 0.5;       
+        %% Check values and averge or new spot
+        epsilon = 15;       
         tmpf = LookUpTable(E2E3, E1E2).f(1);
         tmpg = LookUpTable(E2E3, E1E2).g(1);
         deltaf = double(abs(tmpf) - abs(f));
         deltag = double(abs(tmpg) - abs(g));
         
         % check value for f
-        if ((f >= 0 && tmpf >= 0 && deltaf < epsilon) || (f <= 0 && tmpf < 0 && deltaf < epsilon) || (abs(f) <= (epsilon/2) && abs(tmpf) <= (epsilon/2)))
+        if ((f >= 0 && tmpf >= 0 && deltaf < epsilon) || (f <= 0 && tmpf < 0 && deltaf < epsilon) || (abs(f) + abs(tmpf)) < epsilon)
            % Values are similar
             LookUpTable(E2E3, E1E2).f(1) = (tmpf + double(f))/2;
         else
@@ -154,7 +154,7 @@ for y = 1:fgesize
         end
            
          % check value for g
-        if ((g >= 0 && tmpg >= 0 && deltag < epsilon) || (g <= 0 && tmpg < 0 && deltag < epsilon) || (abs(g) <= (epsilon/2) && abs(tmpg) <= (epsilon/2)))
+        if ((g >= 0 && tmpg >= 0 && deltag < epsilon) || (g <= 0 && tmpg < 0 && deltag < epsilon) || (abs(g) + abs(tmpg)) < epsilon)
            % Values are similar
             LookUpTable(E2E3, E1E2).g(1) = (tmpg + double(g))/2;
         else
