@@ -119,22 +119,20 @@ for i = 1:h
         tmp = P(i, j);
         tmpPrevP = 0;
         tmpPrevZ = 0;
+        
         if(previ >= 1 && prevj > 1)
             tmpPrevP = P2(previ, prevj);
             tmpPrevZ = Z2(previ, prevj);
+        else
             tmp = 0;
         end
         
-        if (tmpPrevP == -inf || isnan(tmpPrevP) || tmpPrevP == inf)
-           tmpPrevP = 0; 
-        end
-        
+        % Check for inf or nans
         if (tmp == -inf || isnan(tmp) || tmp == inf)
            tmp = 0; 
         end
-        
-        P2(i, j) =  tmpPrevP + tmp;
-        Z2(i, j) =  double(tmpPrevZ + tmpPrevP)/2 + tmp;
+        P2(i, j) =  tmpPrevP - tmp;
+        Z2(i, j) =  double(tmpPrevZ + tmpPrevP)/2 - tmp;
         
         prevj= j;
         previ = i;
@@ -152,11 +150,18 @@ for i = 1:h
         if(previ >= 1 && prevj > 1)
             tmpPrevP = P3(previ, prevj);
             tmpPrevZ = Z2(previ, prevj);
+        else
+            tmp = 0;
+        end
+        
+        % Check for inf or nans
+        if (tmp == -inf || isnan(tmp) || tmp == inf)
+           tmp = 0; 
         end
         P3(i, j) =  tmpPrevP + tmp;
         Z2(i, j) =  double(tmpPrevZ + tmpPrevP)/2 + double(tmp + Z2(i, j))/2;
         
-        prevj= j;
+        prevj = j;
         previ = i;
     end
 end
