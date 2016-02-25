@@ -187,11 +187,11 @@ interpGV = imgaussfilt3(interpGV, 6);
 for i = 1:w
    for j = 1:h
       curr = LookUpTable(j, i);
-%       if (isempty(curr.f))
+      if (isempty(curr.f))
          % Fill in with interpolated data
          LookUpTable(j, i).f = interpFV(j, i);
          LookUpTable(j, i).g = interpGV(j, i);
-%       end
+      end
    end
 end
 
