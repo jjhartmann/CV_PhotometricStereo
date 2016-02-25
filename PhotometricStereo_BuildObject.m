@@ -249,99 +249,99 @@ end
 % 
 
 %% Interpolate
-
-for i = 1:h
-    
-  if (mod(i, 2) == 1)
-       for j = 1:w
-           prevj = j;
-           previ = i;
-           if (j ~= 1)
-               prevj = j - 1;
-           end
-           
-           if (j == w && i ~= 1)
-               previ = i - 1;
-           end
-           
-           tmp = P(i, j);
-           P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
-           
-           tmpQ = Q(i, j);
-           Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
-           
-           tmpZ = Z2(i, j);
-           Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
-       end
-  else
-       for j = w:1
-           prevj = j;
-           previ = i;
-           if (j ~= w)
-               prevj = j + 1;
-           end
-           
-           if (j == 1 && i ~= 1)
-               previ = i - 1;
-           end
-           
-           tmp = P(i, j);
-           P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
-           
-           tmpQ = Q(i, j);
-           Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
-           
-           tmpZ = Z2(i, j);
-           Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
-       end
-  end
-end
-
-
-% Other way
-for j = 1:w
-    
-  if (mod(j, 2) == 1)
-       for i = 1:h
-           prevj = j;
-           previ = i;
-           if (j ~= 1)
-               prevj = j - 1;
-           end
-           
-           if (j == w && i ~= 1)
-               previ = i - 1;
-           end
-           
-           tmp = P(i, j);
-           P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
-           
-           tmpQ = Q(i, j);
-           Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
-           
-           tmpZ = Z2(i, j);
-           Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
-       end
-  else
-       for i = h:1
-           prevj = j;
-           previ = i;
-           if (j ~= w)
-               prevj = j + 1;
-           end
-           
-           if (j == 1 && i ~= 1)
-               previ = i - 1;
-           end
-           
-           tmp = P(i, j);
-           P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
-           
-           tmpQ = Q(i, j);
-           Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
-           
-           tmpZ = Z2(i, j);
-           Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
-       end
-  end
-end
+% 
+% for i = 1:h
+%     
+%   if (mod(i, 2) == 1)
+%        for j = 1:w
+%            prevj = j;
+%            previ = i;
+%            if (j ~= 1)
+%                prevj = j - 1;
+%            end
+%            
+%            if (j == w && i ~= 1)
+%                previ = i - 1;
+%            end
+%            
+%            tmp = P(i, j);
+%            P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
+%            
+%            tmpQ = Q(i, j);
+%            Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
+%            
+%            tmpZ = Z2(i, j);
+%            Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
+%        end
+%   else
+%        for j = w:1
+%            prevj = j;
+%            previ = i;
+%            if (j ~= w)
+%                prevj = j + 1;
+%            end
+%            
+%            if (j == 1 && i ~= 1)
+%                previ = i - 1;
+%            end
+%            
+%            tmp = P(i, j);
+%            P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
+%            
+%            tmpQ = Q(i, j);
+%            Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
+%            
+%            tmpZ = Z2(i, j);
+%            Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
+%        end
+%   end
+% end
+% 
+% 
+% % Other way
+% for j = 1:w
+%     
+%   if (mod(j, 2) == 1)
+%        for i = 1:h
+%            prevj = j;
+%            previ = i;
+%            if (j ~= 1)
+%                prevj = j - 1;
+%            end
+%            
+%            if (j == w && i ~= 1)
+%                previ = i - 1;
+%            end
+%            
+%            tmp = P(i, j);
+%            P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
+%            
+%            tmpQ = Q(i, j);
+%            Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
+%            
+%            tmpZ = Z2(i, j);
+%            Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
+%        end
+%   else
+%        for i = h:1
+%            prevj = j;
+%            previ = i;
+%            if (j ~= w)
+%                prevj = j + 1;
+%            end
+%            
+%            if (j == 1 && i ~= 1)
+%                previ = i - 1;
+%            end
+%            
+%            tmp = P(i, j);
+%            P2(i, j) =  ((P(previ, prevj) + P2(i, j))/2) + tmp;
+%            
+%            tmpQ = Q(i, j);
+%            Q2(i, j) =  ((Q(previ, prevj) + Q2(i, j))/2) + tmpQ;
+%            
+%            tmpZ = Z2(i, j);
+%            Z2(i, j) =  ((P2(i, j) + Q2(i, j))/2) + tmpZ;
+%        end
+%   end
+% end
