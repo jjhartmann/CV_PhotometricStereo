@@ -14,9 +14,9 @@ coneLightdata = {'Photostereo_RealImages/cone-lamp1.tif'; 'Photostereo_RealImage
 conedarkdata = {'Photostereo_RealImages/cone2-lamp1.tif'; 'Photostereo_RealImages/cone2-lamp2.tif'; 'Photostereo_RealImages/cone2-lamp3.tif'};
 
 
-img1 = rgb2gray(imread(hexlightdata{1}));
-img2 = rgb2gray(imread(hexlightdata{2}));
-img3 = rgb2gray(imread(hexlightdata{3}));
+img1 = rgb2gray(imread(cylinderdata{1}));
+img2 = rgb2gray(imread(cylinderdata{2}));
+img3 = rgb2gray(imread(cylinderdata{3}));
 
 %% Build 3D mesh
 
@@ -90,12 +90,13 @@ for i = 1:h
          x = ceil((((2 * f)/(1 + f^2 + g^2)) * radius));
          y = ceil((((2 * g)/(1 + f^2 + g^2)) * radius));
          z = ceil(((-1 + f^2 + g^2)/(1 + f^2 + g^2)) * radius);
+
          p = double(x/z);
          q = double(y/z);
          
          deltap = abs(prevp - p);
          deltaq = abs(prevq - q);
-%          if (deltap > 2)
+%          if (p > 5 || p < -5)
 %              p = prevp;
 %          end
 %          if (deltaq > 2)
@@ -136,7 +137,8 @@ end
 PSubSample = P(1:5:end, 1:5:end);
 QSubSample = Q(1:5:end, 1:5:end);
 figure(2)
-quiver(PSubSample, QSubSample);
+qq = quiver(PSubSample, QSubSample);
+qq.AutoScaleFactor = 2;
 
 %% EXPERIMENTS: Integrate along multiple paths. 
 [h, w] = size(P);
@@ -204,8 +206,8 @@ QSUB = Q(1:5:end, 1:5:end);
 WSUB = ones(size(PSUB));
 
 figure(3);
-quiver3(Z2GSUB, PSUB, QSUB, WSUB)
-
+qq2 = quiver3(Z2GSUB, PSUB, QSUB, WSUB)
+qq2.AutoScaleFactor = 2;
 
 %% Q INterpolate over Q Values
 previ = 0;

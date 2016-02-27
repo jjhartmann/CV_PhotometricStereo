@@ -30,7 +30,7 @@ dim = [(cx - radius - 10) (cy - radius - 10) (2*radius + 10) (2*radius + 10)];
 imgCropSphere3 = imcrop(imgSphereGray, dim);
 imgCropSphere2 = rgb2gray(imcrop(imread(sphereArray{2}), dim));
 imgCropSphere1 = rgb2gray(imcrop(imread(sphereArray{1}), dim));
-figure(1)
+figure(1) 
 imshow(imgCropSphere3)
 
 % Get new center
@@ -53,6 +53,9 @@ for x = 1:w
        % check to make sure x,y is in cicle. 
        rtmp = ceil(sqrt(xx^2 + yy^2));
        if (rtmp < radius)
+%            if (rtmp < 10)
+%                 tt = 4;
+%            end
           % Use sterographic projection to detect f and g
            zz = ceil(sqrt(radius^2 - (xx^2 + yy^2)));
            testmat(y, x) = zz;
@@ -61,8 +64,8 @@ for x = 1:w
            nyy = yy/radius;
            nzz = zz/radius;
            
-           f = nxx/(1 - nzz);
-           g = nyy/(1 - nzz);
+           f = nxx/(1.000001 - nzz);
+           g = nyy/(1.000001 - nzz);
            E1 = imgCropSphere1(y, x);
            E2 = imgCropSphere2(y, x);
            E3 = imgCropSphere3(y, x);
@@ -110,8 +113,13 @@ AvgFG = double(zeros(ysize * BinScale, xsize * BinScale));
 E1E2Vec = [];
 E2E3Vec = [];
 fv = [];
-gv = [];
+gv = []; 
 for y = 1:fgesize
+    
+    if (fge(1) == 0 && fge(2) == 0)
+        continue;
+    end
+    
     E1E2 = ceil((log((fge(y,5) + 1)/(fge(y,6) + 1)) + 5) * BinScale);
     E2E3 = ceil((log((fge(y,6) + 1)/(fge(y,7) + 1)) + 5) * BinScale);
     
@@ -187,11 +195,11 @@ interpGV = imgaussfilt3(interpGV, 6);
 for i = 1:w
    for j = 1:h
       curr = LookUpTable(j, i);
-       if (isempty(curr.f))
+%        if (isempty(curr.f))
          % Fill in with interpolated data
          LookUpTable(j, i).f = interpFV(j, i);
          LookUpTable(j, i).g = interpGV(j, i);
-       end
+%        end
    end
 end
 
