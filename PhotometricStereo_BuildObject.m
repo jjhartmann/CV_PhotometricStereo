@@ -14,9 +14,9 @@ coneLightdata = {'Photostereo_RealImages/cone-lamp1.tif'; 'Photostereo_RealImage
 conedarkdata = {'Photostereo_RealImages/cone2-lamp1.tif'; 'Photostereo_RealImages/cone2-lamp2.tif'; 'Photostereo_RealImages/cone2-lamp3.tif'};
 
 
-img1 = rgb2gray(imread(cylinderdata{1}));
-img2 = rgb2gray(imread(cylinderdata{2}));
-img3 = rgb2gray(imread(cylinderdata{3}));
+img1 = rgb2gray(imread(hexlightdata{1}));
+img2 = rgb2gray(imread(hexlightdata{2}));
+img3 = rgb2gray(imread(hexlightdata{3}));
 
 %% Build 3D mesh
 

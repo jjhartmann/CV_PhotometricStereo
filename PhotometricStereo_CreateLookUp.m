@@ -186,6 +186,8 @@ end
 [gridx, gridy] = meshgrid(1:w, 1:h);
 interpFV = griddata(E1E2Vec, E2E3Vec, fv, gridx, gridy, 'cubic');
 interpGV = griddata(E1E2Vec, E2E3Vec, gv, gridx, gridy, 'cubic');
+figure(2)
+mesh(interpFV)
 
 % Smooth interpolation with gaussian filters
 interpFV = imgaussfilt3(interpFV, 6);
@@ -195,11 +197,11 @@ interpGV = imgaussfilt3(interpGV, 6);
 for i = 1:w
    for j = 1:h
       curr = LookUpTable(j, i);
-%        if (isempty(curr.f))
+        if (isempty(curr.f))
          % Fill in with interpolated data
          LookUpTable(j, i).f = interpFV(j, i);
          LookUpTable(j, i).g = interpGV(j, i);
-%        end
+        end
    end
 end
 
