@@ -30,7 +30,7 @@ dim = [(cx - radius - 10) (cy - radius - 10) (2*radius + 10) (2*radius + 10)];
 imgCropSphere3 = imcrop(imgSphereGray, dim);
 imgCropSphere2 = rgb2gray(imcrop(imread(sphereArray{2}), dim));
 imgCropSphere1 = rgb2gray(imcrop(imread(sphereArray{1}), dim));
-figure(1)
+figure(1) 
 imshow(imgCropSphere3)
 
 % Get new center
@@ -53,6 +53,9 @@ for x = 1:w
        % check to make sure x,y is in cicle. 
        rtmp = ceil(sqrt(xx^2 + yy^2));
        if (rtmp < radius)
+%            if (rtmp < 10)
+%                 tt = 4;
+%            end
           % Use sterographic projection to detect f and g
            zz = ceil(sqrt(radius^2 - (xx^2 + yy^2)));
            testmat(y, x) = zz;
@@ -61,8 +64,8 @@ for x = 1:w
            nyy = yy/radius;
            nzz = zz/radius;
            
-           f = nxx/(1 - nzz);
-           g = nyy/(1 - nzz);
+           f = nxx/(1.000001 - nzz);
+           g = nyy/(1.000001 - nzz);
            E1 = imgCropSphere1(y, x);
            E2 = imgCropSphere2(y, x);
            E3 = imgCropSphere3(y, x);
@@ -110,8 +113,13 @@ AvgFG = double(zeros(ysize * BinScale, xsize * BinScale));
 E1E2Vec = [];
 E2E3Vec = [];
 fv = [];
-gv = [];
+gv = []; 
 for y = 1:fgesize
+    
+    if (fge(1) == 0 && fge(2) == 0)
+        continue;
+    end
+    
     E1E2 = ceil((log((fge(y,5) + 1)/(fge(y,6) + 1)) + 5) * BinScale);
     E2E3 = ceil((log((fge(y,6) + 1)/(fge(y,7) + 1)) + 5) * BinScale);
     
@@ -131,15 +139,15 @@ for y = 1:fgesize
         fv = [fv;  double(f)];
         gv = [gv;  double(g)];
     else
-        % Check values and averge or new spot
-        epsilon = 0.5;       
+        %% Check values and averge or new spot
+        epsilon = 15;       
         tmpf = LookUpTable(E2E3, E1E2).f(1);
         tmpg = LookUpTable(E2E3, E1E2).g(1);
-        deltaf = double(abs(tmpf - f));
-        deltag = double(abs(tmpg - g));
+        deltaf = double(abs(tmpf) - abs(f));
+        deltag = double(abs(tmpg) - abs(g));
         
         % check value for f
-        if ((f >= 0 && tmpf >= 0 && deltaf < epsilon) || (f <= 0 && tmpf < 0 && deltaf < epsilon))
+        if ((f >= 0 && tmpf >= 0 && deltaf < epsilon) || (f <= 0 && tmpf < 0 && deltaf < epsilon) || (abs(f) + abs(tmpf)) < epsilon)
            % Values are similar
             LookUpTable(E2E3, E1E2).f(1) = (tmpf + double(f))/2;
         else
@@ -154,7 +162,7 @@ for y = 1:fgesize
         end
            
          % check value for g
-        if ((g >= 0 && tmpg >= 0 && deltag < 1.0) || (g <= 0 && tmpg < 0 && deltag < epsilon))
+        if ((g >= 0 && tmpg >= 0 && deltag < epsilon) || (g <= 0 && tmpg < 0 && deltag < epsilon) || (abs(g) + abs(tmpg)) < epsilon)
            % Values are similar
             LookUpTable(E2E3, E1E2).g(1) = (tmpg + double(g))/2;
         else
@@ -176,18 +184,24 @@ end
 %% Create Grid and intrpolate sparse matrix. 
 [h, w] = size(LookUpTable);
 [gridx, gridy] = meshgrid(1:w, 1:h);
-interpFV = griddata(E1E2Vec, E2E3Vec, fv, gridx, gridy, 'nearest');
-interpGV = griddata(E1E2Vec, E2E3Vec, gv, gridx, gridy, 'nearest');
+interpFV = griddata(E1E2Vec, E2E3Vec, fv, gridx, gridy, 'cubic');
+interpGV = griddata(E1E2Vec, E2E3Vec, gv, gridx, gridy, 'cubic');
+figure(2)
+mesh(interpFV)
+
+% Smooth interpolation with gaussian filters
+interpFV = imgaussfilt3(interpFV, 6);
+interpGV = imgaussfilt3(interpGV, 6);
 
 %% Fill data into lookup table. 
 for i = 1:w
    for j = 1:h
       curr = LookUpTable(j, i);
-      if (isempty(curr.f))
+        if (isempty(curr.f))
          % Fill in with interpolated data
          LookUpTable(j, i).f = interpFV(j, i);
          LookUpTable(j, i).g = interpGV(j, i);
-      end
+        end
    end
 end
 
